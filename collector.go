@@ -3,9 +3,13 @@ package bucket
 
 // Bucket collects items and sends them to the defined callback when the size is reached
 type Bucket interface {
+	// Len returns the number of remaining items in the queue
 	Len() int
+	// Calls returns number of calls the bucket have called
 	Calls() int
+	// Push adds new item in the queue
 	Push(i interface{})
+	// SetCallback replaces the callback function
 	SetCallback(callback func([]interface{}))
 }
 
@@ -19,6 +23,7 @@ type bucket struct {
 }
 
 func (c *bucket) init() {
+	// I think there is no need to implement a loop breaker system
 	go func() {
 		for {
 			var i = <-c.itemsQueue
