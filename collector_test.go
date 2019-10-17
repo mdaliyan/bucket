@@ -40,6 +40,9 @@ func TestConcurrentCollector(t *testing.T) {
 	}
 	wg.Wait()
 	time.Sleep(time.Millisecond * 50)
+	if int(n) != c.Calls() {
+		t.FailNow()
+	}
 	if int(n*70)+c.Len() != 8313*170 {
 		t.FailNow()
 	}
