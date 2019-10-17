@@ -39,7 +39,7 @@ func TestConcurrentCollector(t *testing.T) {
 		}()
 	}
 	wg.Wait()
-	time.Sleep(time.Millisecond * 50)
+	time.Sleep(time.Millisecond * 10)
 	if int(n) != c.Calls() {
 		t.FailNow()
 	}
@@ -65,5 +65,4 @@ func TestOrder(t *testing.T) {
 			c.Push(atomic.AddInt64(&turn, 1))
 		}
 	}
-	time.Sleep(time.Millisecond * 50)
 }
