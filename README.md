@@ -4,7 +4,7 @@
 [![godoc](https://godoc.org/github.com/mdaliyan/bucket.svg?status.svg)](https://godoc.org/github.com/mdaliyan/bucket)
 [![License](http://img.shields.io/badge/license-mit-blue.svg?style=flat)](https://raw.githubusercontent.com/labstack/echo/master/LICENSE)
 
-`bucket` sends your queued items to your callback function in chunks 
+bucket queues your items and sends them to your callback function in chunks.
 
 ### Installation
 
