@@ -1,7 +1,7 @@
-// bucket sends your queued items to your callback function in chunks
+// Package bucket sends your queued items to your callback function in chunks
 package bucket
 
-// the bucket collects items and sends them to the defined callback when the size is reached
+// Bucket collects items and sends them to the defined callback when the size is reached
 type Bucket interface {
 	Len() int
 	Calls() int
