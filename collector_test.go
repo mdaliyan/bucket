@@ -1,4 +1,4 @@
-package collector
+package bucket
 
 import (
 	"sync"
@@ -10,11 +10,11 @@ import (
 func TestCollector(t *testing.T) {
 	c := New(20, func(items []interface{}) {})
 	var n int64
-	c.NewCallback(func(items []interface{}) {
+	c.SetCallback(func(items []interface{}) {
 		atomic.AddInt64(&n, 1)
 	})
 	for i := 0; i < 2010; i++ {
-		c.Append(i)
+		c.Push(i)
 	}
 	time.Sleep(time.Millisecond * 50)
 	if int(n*20)+c.Len() != 2010 {
@@ -25,7 +25,7 @@ func TestCollector(t *testing.T) {
 func TestConcurrentCollector(t *testing.T) {
 	c := New(70, func(items []interface{}) {})
 	var n int64
-	c.NewCallback(func(items []interface{}) {
+	c.SetCallback(func(items []interface{}) {
 		atomic.AddInt64(&n, 1)
 	})
 	var wg sync.WaitGroup
@@ -33,7 +33,7 @@ func TestConcurrentCollector(t *testing.T) {
 		wg.Add(1)
 		go func() {
 			for j := 0; j < 170; j++ {
-				c.Append(j)
+				c.Push(j)
 			}
 			wg.Done()
 		}()
@@ -59,7 +59,7 @@ func TestOrder(t *testing.T) {
 	})
 	for i := 0; i < 8313; i++ {
 		for j := 1; j < 171; j++ {
-			c.Append(atomic.AddInt64(&turn, 1))
+			c.Push(atomic.AddInt64(&turn, 1))
 		}
 	}
 	time.Sleep(time.Millisecond * 50)

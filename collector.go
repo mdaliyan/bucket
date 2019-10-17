@@ -1,65 +1,74 @@
-package collector
+// bucket sends your queued items to your callback function in chunks
+package bucket
 
-type Collector interface {
+// the bucket collects items and sends them to the defined callback when the size is reached
+type Bucket interface {
 	Len() int
-	Append(i interface{})
-	NewCallback(callback func([]interface{}))
+	Calls() int
+	Push(i interface{})
+	SetCallback(callback func([]interface{}))
 }
 
-type collector struct {
+type bucket struct {
 	calls         int
-	count         int
+	size          int
 	items         []interface{}
 	callback      func([]interface{})
 	itemsQueue    chan interface{}
 	callbackQueue chan []interface{}
 }
 
-func (c *collector) init() {
+func (c *bucket) init() {
 	go func() {
 		for {
 			var i = <-c.itemsQueue
-			if i != nil {
-				c.items = append(c.items, i)
-				if len(c.items) == c.count {
-					var popped []interface{}
-					for i := 0; i < c.count; i++ {
-						popped = append(popped, c.items[i])
-					}
-					c.calls++
-					c.items = c.items[c.count:]
-					c.callbackQueue <- popped
-				}
+			c.items = append(c.items, i)
+			if len(c.items) < c.size {
+				continue
 			}
+			var items = make([]interface{}, c.size)
+			for i := 0; i < c.size; i++ {
+				items[i] = c.items[i]
+				c.items[i] = nil // in case user has stored a pointer
+			}
+			c.calls++
+			c.items = c.items[c.size:]
+			c.callbackQueue <- items
 		}
 	}()
 	go func() {
 		for {
-			var collection = <-c.callbackQueue
-			c.callback(collection)
+			// better not to call this with goroutine
+			// cause the order of item may change
+			c.callback(<-c.callbackQueue)
 		}
 	}()
 }
 
-func (c *collector) Calls() int {
+// Calls returns number of calls the bucket have called
+func (c *bucket) Calls() int {
 	return c.calls
 }
 
-func (c *collector) NewCallback(callback func([]interface{})) {
+// SetCallback replaces the callback function
+func (c *bucket) SetCallback(callback func([]interface{})) {
 	c.callback = callback
 }
 
-func (c *collector) Len() int {
+// Len returns the number of remaining items in the queue
+func (c *bucket) Len() int {
 	return len(c.items)
 }
 
-func (c *collector) Append(i interface{}) {
+// Push adds new item in the queue
+func (c *bucket) Push(i interface{}) {
 	c.itemsQueue <- i
 }
 
-func New(itemCount int, callback func([]interface{})) Collector {
-	var c = collector{
-		count:         itemCount,
+// New returns a fixed size bucket
+func New(size int, callback func([]interface{})) Bucket {
+	var c = bucket{
+		size:          size,
 		itemsQueue:    make(chan interface{}, 1000),
 		callbackQueue: make(chan []interface{}, 10000),
 		callback:      callback,
