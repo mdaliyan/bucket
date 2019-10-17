@@ -44,3 +44,23 @@ func TestConcurrentCollector(t *testing.T) {
 		t.FailNow()
 	}
 }
+
+func TestOrder(t *testing.T) {
+
+	var check, turn int64
+
+	c := New(100, func(items []interface{}) {
+		for _, i := range items {
+			atomic.AddInt64(&check, 1)
+			if check != i.(int64) {
+				t.FailNow()
+			}
+		}
+	})
+	for i := 0; i < 8313; i++ {
+		for j := 1; j < 171; j++ {
+			c.Append(atomic.AddInt64(&turn, 1))
+		}
+	}
+	time.Sleep(time.Millisecond * 50)
+}
