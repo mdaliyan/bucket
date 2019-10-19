@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func TestCollector(t *testing.T) {
+func TestBucket(t *testing.T) {
 	c := New(20, func(items []interface{}) {})
 	var n int64
 	c.SetCallback(func(items []interface{}) {
@@ -22,7 +22,7 @@ func TestCollector(t *testing.T) {
 	}
 }
 
-func TestConcurrentCollector(t *testing.T) {
+func TestConcurrentBucket(t *testing.T) {
 	c := New(70, func(items []interface{}) {})
 	var n int64
 	c.SetCallback(func(items []interface{}) {
