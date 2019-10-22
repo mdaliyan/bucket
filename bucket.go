@@ -71,9 +71,9 @@ func (c *bucket) Push(i interface{}) {
 }
 
 // New returns a fixed size bucket
-func New(size int, callback func([]interface{})) Bucket {
+func New(size uint, callback func([]interface{})) Bucket {
 	var c = bucket{
-		size:          size,
+		size:          int(size),
 		itemsQueue:    make(chan interface{}, 1000),
 		callbackQueue: make(chan []interface{}, 10000),
 		callback:      callback,
