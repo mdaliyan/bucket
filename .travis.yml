@@ -2,6 +2,8 @@ sudo: false
 language: go
 
 go:
+  - 1.11
+  - 1.14
   - master
 
 # Skip the install step. Don't `go get` dependencies. Only build with the code
