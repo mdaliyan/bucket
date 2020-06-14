@@ -20,10 +20,10 @@ var callback = func(items []interface{}) {
     fmt.Println(items)
 }
 
-var bucket = bucket.New(10, callback)
+var b = bucket.New(10, callback)
 
 for i:=0; i < 25; i++ {
-    bucket.Push(i)
+    b.Push(i)
 }
 
 time.Sleep(time.Millisecond)
