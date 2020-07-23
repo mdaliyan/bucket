@@ -7,8 +7,12 @@ import (
 	"time"
 )
 
+func doNothingWithItems(_ []interface{}) {
+	// Do nothing because of testing purpose
+}
+
 func TestBucket(t *testing.T) {
-	c := New(20, func(items []interface{}) {})
+	c := New(20, doNothingWithItems)
 	var n int64
 	c.SetCallback(func(items []interface{}) {
 		atomic.AddInt64(&n, 1)
@@ -23,7 +27,7 @@ func TestBucket(t *testing.T) {
 }
 
 func TestConcurrentBucket(t *testing.T) {
-	c := New(70, func(items []interface{}) {})
+	c := New(70, doNothingWithItems)
 	var n int64
 	c.SetCallback(func(items []interface{}) {
 		atomic.AddInt64(&n, 1)
