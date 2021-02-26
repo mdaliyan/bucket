@@ -16,19 +16,19 @@ go get github.com/mdaliyan/bucket
 ### Usage
 
 ```go
-var callback = func(items []interface{}) {
+callback := func(items []interface{}) {
     fmt.Println(items)
 }
 
-var b = bucket.New(10, callback)
+b, _ := bucket.New(bucket.BySize(10), callback)
 
-for i:=0; i < 25; i++ {
+for i := 0; i < 25; i++ {
     b.Push(i)
 }
 
-time.Sleep(time.Millisecond)
+time.Sleep(time.Microsecond * 100)
 
-fmt.Println(bucket.Len())
+fmt.Println(b.Len())
 ```
 this Prints
 ```
