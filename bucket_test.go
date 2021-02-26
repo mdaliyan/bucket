@@ -12,7 +12,7 @@ func doNothingWithItems(_ []interface{}) {
 }
 
 func TestBucket(t *testing.T) {
-	c := New(20, doNothingWithItems)
+	c, _ := New(BySize(20), doNothingWithItems)
 	var n int64
 	c.SetCallback(func(items []interface{}) {
 		atomic.AddInt64(&n, 1)
@@ -21,22 +21,24 @@ func TestBucket(t *testing.T) {
 		c.Push(i)
 	}
 	time.Sleep(time.Millisecond * 50)
-	if int(n*20)+c.Len() != 2010 {
+	if int(atomic.LoadInt64(&n)*20)+c.Len() != 2010 {
 		t.FailNow()
 	}
 }
 
 func TestConcurrentBucket(t *testing.T) {
-	c := New(70, doNothingWithItems)
+	count := 1000
+	size := 60
+	c, _ := New(BySize(size), doNothingWithItems)
 	var n int64
 	c.SetCallback(func(items []interface{}) {
 		atomic.AddInt64(&n, 1)
 	})
 	var wg sync.WaitGroup
-	for i := 0; i < 8313; i++ {
+	for i := 0; i < count; i++ {
 		wg.Add(1)
 		go func() {
-			for j := 0; j < 170; j++ {
+			for j := 0; j < size; j++ {
 				c.Push(j)
 			}
 			wg.Done()
@@ -44,10 +46,10 @@ func TestConcurrentBucket(t *testing.T) {
 	}
 	wg.Wait()
 	time.Sleep(time.Millisecond * 10)
-	if int(n) != c.Calls() {
+	if uint64(atomic.LoadInt64(&n)) != c.Calls() {
 		t.FailNow()
 	}
-	if int(n*70)+c.Len() != 8313*170 {
+	if int(atomic.LoadInt64(&n)*int64(size))+c.Len() != count*size {
 		t.FailNow()
 	}
 }
@@ -56,7 +58,7 @@ func TestOrder(t *testing.T) {
 
 	var check, turn int64
 
-	c := New(100, func(items []interface{}) {
+	c, _ := New(BySize(100), func(items []interface{}) {
 		for _, i := range items {
 			atomic.AddInt64(&check, 1)
 			if check != i.(int64) {
