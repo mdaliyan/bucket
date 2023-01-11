@@ -1,8 +1,9 @@
 # Bucket
-[![Build Status](https://travis-ci.org/mdaliyan/bucket.svg?branch=master)](https://travis-ci.org/mdaliyan/bucket)
-[![Go Report Card](https://goreportcard.com/badge/github.com/mdaliyan/bucket)](https://goreportcard.com/report/github.com/mdaliyan/bucket)
-[![Go Walker](http://gowalker.org/api/v1/badge)](https://gowalker.org/github.com/mdaliyan/bucket) 
-[![godoc](https://godoc.org/github.com/mdaliyan/bucket.svg?status.svg)](https://godoc.org/github.com/mdaliyan/bucket)
+
+![example workflow](https://github.com/mdaliyan/bucket/actions/workflows/test.yml/badge.svg)
+[![Coverage Status](https://coveralls.io/repos/github/mdaliyan/bucket/badge.svg?branch=master)](https://coveralls.io/github/mdaliyan/bucket?branch=master)
+[![Go Report Card](https://goreportcard.com/badge/github.com/mdaliyan/bucket/v2)](https://goreportcard.com/report/github.com/mdaliyan/bucket/v2)
+[![Go Reference](https://pkg.go.dev/badge/github.com/mdaliyan/bucket/v2.svg)](https://pkg.go.dev/github.com/mdaliyan/bucket/v2)
 [![License](http://img.shields.io/badge/license-mit-blue.svg?style=flat)](https://raw.githubusercontent.com/labstack/echo/master/LICENSE)
 
 bucket queues your items and sends them to your callback function in chunks.

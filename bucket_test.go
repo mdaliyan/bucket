@@ -7,31 +7,30 @@ import (
 	"time"
 )
 
-func doNothingWithItems(_ []interface{}) {
-	// Do nothing because of testing purpose
-}
-
-func TestBucket(t *testing.T) {
-	c, _ := New(BySize(20), doNothingWithItems)
+func TestCountCallbackCalls(t *testing.T) {
 	var n int64
-	c.SetCallback(func(items []interface{}) {
+	c, _ := New(BySize(100), func(items []interface{}) {
 		atomic.AddInt64(&n, 1)
 	})
 	for i := 0; i < 2010; i++ {
 		c.Push(i)
 	}
-	time.Sleep(time.Millisecond * 50)
-	if int(atomic.LoadInt64(&n)*20)+c.Len() != 2010 {
-		t.FailNow()
+	time.Sleep(time.Millisecond * 100)
+	callbacksCount := atomic.LoadInt64(&n)
+	if callbacksCount != 20 {
+		t.Errorf("callback should have been called 20 times but it was called %d times", callbacksCount)
+	}
+	itemsLeftInBucket := c.Len()
+	if itemsLeftInBucket != 10 {
+		t.Errorf("there should be 10 items left in bucket but there are %d", itemsLeftInBucket)
 	}
 }
 
 func TestConcurrentBucket(t *testing.T) {
 	count := 1000
 	size := 60
-	c, _ := New(BySize(size), doNothingWithItems)
 	var n int64
-	c.SetCallback(func(items []interface{}) {
+	c, _ := New(BySize(size), func(items []interface{}) {
 		atomic.AddInt64(&n, 1)
 	})
 	var wg sync.WaitGroup
@@ -45,7 +44,7 @@ func TestConcurrentBucket(t *testing.T) {
 		}()
 	}
 	wg.Wait()
-	time.Sleep(time.Millisecond * 10)
+	time.Sleep(time.Millisecond * 100)
 	if uint64(atomic.LoadInt64(&n)) != c.Calls() {
 		t.FailNow()
 	}
